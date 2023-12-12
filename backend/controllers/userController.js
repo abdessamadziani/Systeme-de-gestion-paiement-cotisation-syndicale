@@ -1,8 +1,6 @@
 
 const express = require('express');
-const User = require('../models/Admin');
 const sendEmail= require('../utils/sendEmail')
-
 const jwt=require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
@@ -11,7 +9,7 @@ const Admin = require('../models/Admin');
 
 exports.activeTrue = (req, res) => {
     // Update the user's account status to "active"
-    User.findByIdAndUpdate(req.profile._id, { active: true })
+    Admin.findByIdAndUpdate(req.profile._id, { active: true })
         .exec()
         .then(updatedUser => {
             if (!updatedUser) {
@@ -52,26 +50,24 @@ exports.signup = async (req, res) => {
 
 
     try {
-        const savedUser = await user.save();
-
+        const savedAdmin = await user.save();
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
         res.cookie('token', token, { expires: new Date(Date.now() + 600000) });
 
-        const link = `http://localhost:5173/activate-email/${token}`;
+         const link = `http://localhost:5173/auth/activate-email/${token}`;
         const mailOptions = {
             from: 'Syndicale',
-            to: savedUser.email, // Use the user's email
+            to: savedAdmin.email, // Use the user's email
             subject: 'Hello Dear '+user.name,
-            // html:`<a href="http://localhost:8000/api/users/profile/${token}">Active Account Now</a>`
-            html:`<a href=${link}>Active Account Now</a>`
+            // html:`<a href="http://localhost:8000/api/admins/profile/${token}">Active Account Now</a>`
+             html:`<a href=${link}>Active Account Now</a>`
 
-        
         }
         // Send the email here
         await sendEmail(mailOptions);
 
     
-        res.status(200).json({ message: 'User registration successful please verify your email', user: savedUser });
+        res.status(200).json({ message: 'User registration successful please verify your email', user: savedAdmin });
 
     } catch (error) {
         console.error(error);
@@ -89,22 +85,26 @@ exports.signup = async (req, res) => {
 
 
 exports.signin =(req, res) => {
-  const { email, password } = req.body;
 
+  const { email, password } = req.body;
+  console.log({email})
    if (!email && password) {
             return res.status(400).json({ message: 'email is not allowed to be empty' });
+
           }
           if (email && !password) {
             return res.status(400).json({ message: 'Invalid password format. It should be alphanumeric and between 3 to 30 characters',
+
              });
           }
 
 
-  User.findOne({ email }) 
+  Admin.findOne({ email }) 
       .then(user => {
 
         if (!user) {
             return res.status(400).json({ error: 'User not found' });
+
         }
      
 
@@ -112,6 +112,7 @@ exports.signin =(req, res) => {
 
           if (!user.authenticate(password)) {
               return res.status(401).json({ message: 'Email and Password do not match' });
+
           }
 
        
@@ -126,12 +127,12 @@ exports.signin =(req, res) => {
 
           res.cookie('token', token, { expires: new Date(Date.now() + 600000) });
 
+             console.log("good")
 
-
-          const { _id, name, email, role } = user;
+          const { _id, name, email } = user;
           res.json({
               token,
-              user: { _id, name, email, role }
+              user: { _id, name, email }
 
           });
 
@@ -143,10 +144,53 @@ exports.signin =(req, res) => {
       .catch(err => {
           console.log(err); // Handle errors properly
           return res.status(500).json({ error: 'Internal server error' });
+
       });
 }
 
 
+
+
+
+
+
+// exports.signin = (req, res) => {
+//   const { email, password } = req.body;
+//   console.log({ email });
+
+//   if (!email || !password) {
+//     return res.status(400).json({ message: 'Both email and password are required' });
+//   }
+
+//   Admin.findOne({ email })
+//     .then(user => {
+//       if (!user) {
+//         return res.status(400).json({ error: 'User not found' });
+//       }
+
+//       if (!user.authenticate(password)) {
+//         return res.status(401).json({ message: 'Email and Password do not match' });
+//       }
+
+//       if (!user.active) {
+//         return res.status(401).json({ error: 'Sorry, you need to activate your account first. Check your email.' });
+//       }
+
+//       const token = jwt.sign({ _id: user._id }, process.env.jwt_SECRET);
+
+//       res.cookie('token', token, { expires: new Date(Date.now() + 600000) });
+
+//       const { _id, name, email, role } = user;
+//       res.json({
+//         token,
+//         user: { _id, name, email, role },
+//       });
+//     })
+//     .catch(err => {
+//       console.log(err); // Handle errors properly
+//       return res.status(500).json({ error: 'Internal server error' });
+//     });
+// };
 
 
 
@@ -169,7 +213,7 @@ exports.reset = async (req, res) => {
       const newPassword = req.body.newpassword;
   
       // Retrieve the user by their ID
-      const user = await User.findById(req.profile._id).exec();
+      const user = await Admin.findById(req.profile._id).exec();
   
       if (!user) {
         res.status(404).json({ error: 'User not found' });
@@ -195,7 +239,7 @@ exports.reset = async (req, res) => {
   exports.checkuser = (req, res) => {
     const { email } = req.body;
   
-    User.findOne({ email }) 
+    Admin.findOne({ email }) 
         .then(user => {
             if (!user) {
                 return res.status(400).json({ error: 'User not found' });
@@ -207,10 +251,10 @@ exports.reset = async (req, res) => {
             res.cookie('token', token, { expires: new Date(Date.now() + 600000) });
 
 
-            const link = `http://localhost:5173/forget-password-confirmation`;
+            const link = `http://localhost:5173/auth/forget-password-confirmation`;
 
             const mailOptions = {
-                from: 'Marhaba Delivery',
+                from: 'Syndicale',
                 to: user.email, // Use the user's email
                 subject: 'Hello Dear '+user.name,
                 // html:`<a href="http://localhost:4000/api/users/forgetpassword/${token}">Reset Password</a>`
@@ -222,10 +266,10 @@ exports.reset = async (req, res) => {
              sendEmail(mailOptions);
 
 
-            const { _id, name, email, role } = user;
+            const { _id, name, email} = user;
             res.json({
                 token,
-                user: { _id, name, email, role }
+                user: { _id, name, email }
   
             });
 

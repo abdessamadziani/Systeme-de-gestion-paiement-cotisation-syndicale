@@ -3,11 +3,11 @@ const {v1:uuid}=require('uuid')
 const crypto= require('crypto');
 
 const Schema = mongoose.Schema;   
-const adminSchema = new Schema({
+const userSchema = new Schema({
     name: {
             type: String,
             trim: true,
-            // require: [true,'name required'],
+             require: [true,'name required']
            },
     email: {
             type: String,
@@ -45,7 +45,7 @@ const adminSchema = new Schema({
 
 
 
-adminSchema.virtual('password')
+userSchema.virtual('password')
 .set(function(password){
     this._password=password
     this.salt=uuid()
@@ -59,7 +59,7 @@ adminSchema.virtual('password')
 
  
 
-adminSchema.methods={
+userSchema.methods={
     authenticate: function(password){
         return this.cryptPassword(password)===this.hashed_password  
 

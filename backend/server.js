@@ -8,7 +8,7 @@ const app = express();
 
 // swagger(app)
 const connectDB = require('./server/config/db');
-// const clientRoutes = require('./routes/clients');
+const usersRoutes = require('./routes/users');
 // const expressValidator = require('express-validator');
 const cors=require('cors')
 const cookieParser = require('cookie-parser');
@@ -26,6 +26,8 @@ app.use(cors())
 app.use(cookieParser());
 
 // Routes middleware
+app.use('/api/admins', usersRoutes);
+
 app.get('/', (req, res) => {
   res.send('hello world'); // Fix: Use res.send() to send the response
 });

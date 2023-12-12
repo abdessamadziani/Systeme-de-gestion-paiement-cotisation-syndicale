@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config()
 
-exports.requireSignIn = expressJWT({
+exports.requireSignIn = expressJWT ({
     secret: process.env.JWT_SECRET,
     algorithms: ['HS256'],
     userProperty: 'payload',

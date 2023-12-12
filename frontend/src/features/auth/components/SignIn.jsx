@@ -1,9 +1,14 @@
 import React from 'react'
+import {useState} from 'react'
+
 import signInImg from '../../../shared/imgs/Sign in-pana.png'
 import {Link,useNavigate} from 'react-router-dom'
 import { useForm } from "react-hook-form"
+import axios from "axios"
 
-
+import Swal from 'sweetalert2'; // Import the main SweetAlert2 module
+import 'sweetalert2/dist/sweetalert2.min.css'; // Import the CSS file
+import 'sweetalert2/dist/sweetalert2.min.js'; // Import the JavaScript file
 
 
 function SignIn() {
@@ -16,43 +21,89 @@ function SignIn() {
 
 
 
-const submitSignIn = () => {
-    //  e.preventDefault()
+
+const [user,setUser]=useState({
+  email: '',
+  password: ''
+ })
 
 
-        // axios.post('http://localhost:4000/api/users/signup', user, {
-        //   headers: {
-        //     'Accept': 'application/json',
-        //     'Content-Type': 'application/json',
-        //   },
-        // })
-        console.log("clicked")
-          .then(res => {
-            // Handle the successful response here.
-            console.log(res.data);
-            clearInputs()
-            Swal.fire({
-              title: 'Your registration is done successfully',
-              text: 'Go Check Your Email To Activate Your Account',
-              icon: 'success',
-              confirmButtonText: 'Cool'
-            })
+ const clearInputs=()=>{
+  document.getElementById('email').value=""
+  document.getElementById('password').value=""
+
+}
+
+// const submitSignIn = () => {
+//     //  e.preventDefault()
+
+
+//         axios.post('http://localhost:8000/api/admins/signin', user, {
+//           headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json',
+//           },
+//         })
+//         console.log("clicked")
+//           .then(res => {
+//             // Handle the successful response here.
+//             console.log(res.data);
+//             clearInputs()
+//             Swal.fire({
+//               title: 'Your registration is done successfully',
+//               text: 'Go Check Your Email To Activate Your Account',
+//               icon: 'success',
+//               confirmButtonText: 'Cool'
+//             })
             
-          })
-          .catch(error => {
-            // Handle any errors that occur during the request.
-            console.error(error);
-            Swal.fire({
-              title: 'Failed registration',
-              text: 'Try Again ',
-              icon: 'error',
-              confirmButtonText: 'Okey'
-            })
+//           })
+//           .catch(error => {
+//             // Handle any errors that occur during the request.
+//             console.error(error);
+//             Swal.fire({
+//               title: 'Failed registration',
+//               text: 'Try Again ',
+//               icon: 'error',
+//               confirmButtonText: 'Okey'
+//             })
         
-          });
+//           });
       
 
-   };
+//    };
+
+
+
+const submitSignIn = () => {
+  axios.post('http://localhost:8000/api/admins/signin', user, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(res => {
+      // Handle the successful response here.
+      console.log(res.data);
+      clearInputs();
+      Swal.fire({
+        title: 'Your registration is done successfully',
+        text: 'Go Check Your Email To Activate Your Account',
+        icon: 'success',
+        confirmButtonText: 'Cool'
+      });
+    })
+    .catch(error => {
+      // Handle any errors that occur during the request.
+      console.error(error);
+      Swal.fire({
+        title: 'Failed registration',
+        text: 'Try Again ',
+        icon: 'error',
+        confirmButtonText: 'Okey'
+      });
+    });
+};
+
 
    const handleChange=(e)=>{
 

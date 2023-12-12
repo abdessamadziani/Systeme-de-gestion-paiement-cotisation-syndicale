@@ -1,7 +1,13 @@
 import React from 'react'
 import signUpImg from '../../../shared/imgs/Sign up-cuate.png'
 import { useForm } from "react-hook-form"
+import {useState} from 'react'
+import axios  from 'axios'
 
+
+import Swal from 'sweetalert2'; // Import the main SweetAlert2 module
+import 'sweetalert2/dist/sweetalert2.min.css'; // Import the CSS file
+import 'sweetalert2/dist/sweetalert2.min.js'; // Import the JavaScript file
 
 function SignUp() {
 
@@ -13,18 +19,32 @@ const {
     } = useForm()
 
 
+    const clearInputs=()=>{
+      document.getElementById('email').value=""
+      document.getElementById('name').value=""
+      document.getElementById('password').value=""
+    
+    }
+    
+    
+       const [user,setUser]=useState({
+        name: '',
+        email: '',
+        password: '',
+       })
+
+
 
     const submitSignUp = () => {
         //  e.preventDefault()
     
     
-            // axios.post('http://localhost:4000/api/users/signup', user, {
-            //   headers: {
-            //     'Accept': 'application/json',
-            //     'Content-Type': 'application/json',
-            //   },
-            // })
-            console.log("clicked")
+            axios.post('http://localhost:8000/api/admins/signup', user, {
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+            })
               .then(res => {
                 // Handle the successful response here.
                 console.log(res.data);
