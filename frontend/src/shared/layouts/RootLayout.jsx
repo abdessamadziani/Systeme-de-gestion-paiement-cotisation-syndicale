@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import  Header  from "../components/NavBar"
+// import  Header  from "../components/NavBar"
 
 const RootLayout = () => {
       

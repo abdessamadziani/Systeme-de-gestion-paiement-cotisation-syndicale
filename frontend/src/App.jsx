@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router";
  import  RootLayout  from "./shared/layouts/RootLayout";
 // import { NotFoundPage } from "./shared/pages";
 import AuthRoutes from "./features/auth/routes/AuthRoutes";
+import HomeRoutes from "./features/home/routes/HomeRoutes";
 // import MailRoutes from "./features/mail/routes/MailRoutes";
 // import { AuthMiddleware } from "./features/auth/middlewares";
 
@@ -16,6 +17,7 @@ import {LandingPage} from "./shared/pages/LandingPage"
 
 function App() {
   const [count, setCount] = useState(0)
+  
 
   return (
     <>
@@ -23,6 +25,8 @@ function App() {
       <Route path="/" element={<RootLayout />}>
         <Route index element={<LandingPage/>} />
         <Route path="/auth/*" element={<AuthRoutes />} />
+        <Route path="/home/*" element={<HomeRoutes />} />
+
         {/* <Route path="/mail/*" element={<MailRoutes />} /> */}
         {/* <Route
           path="/delivery-tracking/*"
