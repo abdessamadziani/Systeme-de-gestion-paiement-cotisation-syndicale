@@ -1,8 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+
+
+
   const ownersApi = createApi({
   reducerPath: "ownersApi",
-  // baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080/" }),
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/api/" }),
 
   endpoints: (builder) => ({
@@ -10,8 +12,18 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
       query: () => `owners`,
 
     }),
+    
+    createOwner: builder.mutation({
+      query: (newClient) => ({
+        url: "owners/create/",
+        method: "POST",
+        body: newClient,
+      }),
+    }),
+
+
   }),
 });
 
 export default ownersApi
-export  const { useGetAllOwnersQuery } = ownersApi;
+export  const { useGetAllOwnersQuery, useCreateOwnerMutation} = ownersApi;

@@ -7,7 +7,7 @@ const History = () => {
     <SideBar/>
     {/* <h2 className=' w-full text-red-500 mx-auto bg-red-200 mt-96 text-center'>History</h2> */}
     <div className='mt-24 flex w-full justify-end'>
-         <button data-modal-target="crud-modal" data-modal-toggle="crud-modal"  type="button" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Add New Client</button>
+         <button   type="button" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Add New Client</button>
       </div>
       
   <div className='w-4/5 ms-auto me-8 mt-10'>

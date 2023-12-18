@@ -17,7 +17,7 @@ exports.create = async (req, res) => {
 
 exports.getAppartements = async (req, res) => {
     try {
-        const appartements = await Appartement.find();
+        const appartements = await Appartement.find().populate('ownerId');
 
         res.status(200).json({ message: 'Appartements grabbed successfully', appartements: appartements });
     } catch (error) {

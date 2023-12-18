@@ -18,6 +18,8 @@ exports.create = async (req, res) => {
 exports.getPayments = async (req, res) => {
     try {
         const payments = await Payment.find().populate('ownerId').populate('appartementId');
+        // const payments = await Payment.find();
+
 
         res.status(200).json({ message: 'payments grabbed successfully', payments: payments });
         console.log(payments);
