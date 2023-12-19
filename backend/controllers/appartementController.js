@@ -26,6 +26,29 @@ exports.getAppartements = async (req, res) => {
     }
 }; 
 
+
+
+
+
+
+
+
+
+
+
+exports.getAppartementsNumber = async (req, res) => {
+    const buildingName = req.params.name;  // Get the building name from query parameters
+    console.log(buildingName)
+    try {
+        const appartementsNumber = await Appartement.find({ building: buildingName }).populate('ownerId');
+        res.status(200).json({ message: 'Appartements room numbers grabbed successfully', appartementsNumber });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get Appartements room numbers' });
+    }
+};
+
+
 exports.updateAppartement = async (req, res) => {
     const appartementId = req.params.id; // Assuming you are passing the owner ID in the request parameters
     const updateData = req.body;

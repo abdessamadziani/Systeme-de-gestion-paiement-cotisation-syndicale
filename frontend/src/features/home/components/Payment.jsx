@@ -3,6 +3,9 @@ import { Dialog, Transition } from '@headlessui/react'
  import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
  import SideBar from './SideBar'
  import { useGetAllPaymentsQuery } from '../redux/paymentsAPI';
+ import { useGetAllAppartementsQuery,useGetAppartementNumberByBuildingQuery } from '../redux/appartementsAPI';
+//  import { useGetAllOwnersQuery } from '../redux/clientsAPI';
+
 
 import { useDispatch } from 'react-redux';
 
@@ -15,20 +18,36 @@ import { useDispatch } from 'react-redux';
     }
       const cancelButtonRef = useRef(null)
     
- 
-   const dispatch = useDispatch()
- 
-   const { data, isLoading,error} = useGetAllPaymentsQuery();
- 
-    console.log(data)
-    if (isLoading) {
+  
+   const { data: dataPayments, isLoading:isLoadingPayment,error: errorPayment} = useGetAllPaymentsQuery();
+   const { data: dataAppartements, isLoading:isLoadingAppartement,error: errorAppartement} = useGetAllAppartementsQuery();
+  //  const { data: dataOwners, isLoading:isLoadingOwner,error: errorOwner} = useGetAllOwnersQuery();
+  const [buildingName,setBuildingName]=useState('argana')
+   const { data: roomData, isLoading: isLoadingRoom, error: errorRoom } = useGetAppartementNumberByBuildingQuery(buildingName);
+
+   console.log(roomData)
+    console.log(dataPayments)
+    if (isLoadingPayment) {
      return <div>Loading products...</div>;
    }
  
-   if (error) {
+   if (errorPayment) {
      return <div>Error: Unable to fetch products. Please try again later.</div>;
    }
 
+
+   const handleBuildingChange = (e) => {
+    // getRoomByBuildingName(e.target.value); 
+    // setBuildingName(e.target.value)
+    useEffect(() => {
+      setBuildingName(e.target.value)
+       alert("tt")
+      console.log(buildingName);
+    }, [buildingName]);
+    // console.log(buildingName)
+};
+
+// console.log("*******",roomData,"************")
 
   return (
     <>
@@ -36,7 +55,7 @@ import { useDispatch } from 'react-redux';
       <div>Payment</div>
       {/* <h2 className=' w-full text-red-500 mx-auto bg-red-200 mt-96 text-center'>Payments</h2> */}
       <div className='mt-24 flex w-full justify-end'>
-         <button onClick={handleModal}   type="button" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Add New Client</button>
+         <button onClick={handleModal}   type="button" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Add New Payment</button>
       </div>
       
   <div className='w-4/5 ms-auto me-8 mt-10'>
@@ -65,8 +84,8 @@ import { useDispatch } from 'react-redux';
                           </tr>
                       </thead>
                       <tbody>
-                      {data.payments?.map((payment) => (
-                          <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                      {dataPayments.payments?.map((payment) => (
+                          <tr key={payment.id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                               <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                   {payment._id}
                               </th>
@@ -146,14 +165,38 @@ import { useDispatch } from 'react-redux';
                         </p>
                         <div class="p-4 md:p-5">
                 <form class="space-y-4"  method="POST" id="myForm" action="/updateUser/?_method=POST"  enctype="multipart/form-data">
+                   <div>
+                        <label for="building" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Building Name</label>
+                        <select id="buildingId" name="buildingId" onChange={handleBuildingChange} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        {/* <select id="buildingId" name="buildingId"  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"> */}
+                            <option selected>Choose the Building</option>
+                            {dataAppartements.appartements?.map((appartement) => (
+                            <option key={appartement.id} value={appartement._id}>{appartement.building}</option>
+                            ))}
+
+                       </select> 
+                   </div>
+                    <div>
+                        <label for="number" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Appartement Number</label>
+                        <select id="number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option selected>Choose the Room Number</option>
+                            {roomData.appartementsNumber?.map((appartement) => (
+
+                            <option key={appartement.id} value={appartement.nb}>{appartement.nb}</option>
+                            ))}
+                        </select>           
+                     </div>
                    
                     <div>
-                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                        <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Price" required/>
+                        <label for="owner" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Owner Name</label>
+                        <input type="text" name="owner" id="owner" placeholder=" owner name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/>
                     </div>
                     <div>
-                        <label for="cin" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cin</label>
-                        <input type="text" name="cin" id="cin" placeholder=" Cin " class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/>
+                        <label for="status" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
+                       <select id="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option selected>Not Paid</option>
+                            <option value="US">Paid</option>
+                       </select> 
                     </div>
                  
        
@@ -165,8 +208,8 @@ import { useDispatch } from 'react-redux';
                 </div>
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-green-300 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    type="submit"
+                    className="inline-flex w-full justify-center rounded-md bg-green-300 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-400 sm:ml-3 sm:w-auto"
                     onClick={() => setOpen(false)}
                   >
                     Add

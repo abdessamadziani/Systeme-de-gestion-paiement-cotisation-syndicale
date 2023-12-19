@@ -1,11 +1,22 @@
-import { Fragment, useRef, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
- import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import SideBar from './SideBar'
-import { useCreateAppartementMutation, useGetAllAppartementsQuery } from '../redux/appartementsAPI';
+// import { Fragment, useRef, useState } from 'react'
+// import { Dialog, Transition } from '@headlessui/react'
+//  import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+// import SideBar from './SideBar'
+// import {useGetAllAppartementsQuery, useCreateAppartementMutation } from '../redux/appartementsAPI';
+// import { useDispatch } from 'react-redux';
+
+
+import { Fragment, useRef, useState, useEffect } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import SideBar from './SideBar';
+import { useGetAllAppartementsQuery, useCreateAppartementMutation } from '../redux/appartementsAPI';
+import { useGetAllOwnersQuery} from '../redux/clientsAPI';
 
 import { useDispatch } from 'react-redux';
+
  const Appartement = () => {
+  const [isAppartementAdded, setIsAppartementAdded] = useState(false);
 
   const [open, setOpen] = useState(false)
 const handleModal=()=>{
@@ -13,48 +24,49 @@ const handleModal=()=>{
 }
   const cancelButtonRef = useRef(null)
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
-  const { data, isLoading,error} = useGetAllAppartementsQuery();
-
-   console.log(data)
-   if (isLoading) {
-    return <div>Loading products...</div>;
-  }
-
-  if (error) {
-    return <div>Error: Unable to fetch products. Please try again later.</div>;
-  }
+  const { data: appartementsData , isLoading: isLoadingAppartements,error:errorAppartements} = useGetAllAppartementsQuery();
+  const { data:ownersData, isLoading: isLoadingOwners,error:errorOwners} = useGetAllOwnersQuery();
+   console.log(appartementsData)
+   console.log(ownersData)
 
 
   const [createAppartement] = useCreateAppartementMutation();
 
 
   useEffect(() => {
-   if (isApartmentAdded) {
+   if (isAppartementAdded) {
      window.location.reload();
    }
- }, [isApartmentAdded]);
+ }, [isAppartementAdded]);
 
 
   const handleSubmit = async(event) => {
    event.preventDefault();
    
    const newAppartement = {
-     number: event.target.number.value,
+     nb: event.target.number.value,
      floor: event.target.floor.value,
-     building: event.target.building.value,
+     price: event.target.price.value,
+     building:  event.target.building.value,
      ownerId: event.target.ownerId.value,
    };
 
    await createAppartement(newAppartement)
-   setIsApartmentAdded(true);
+   setIsAppartementAdded(true);
 
    //  dispatch(addClient(newClient));
    setOpen(false); // Close the modal
  };
 
+   if (isLoadingAppartements) {
+    return <div>Loading products...</div>;
+  }
 
+  if (errorAppartements) {
+    return <div>Error: Unable to fetch products. Please try again later.</div>;
+  }
 
 
   return (
@@ -94,7 +106,9 @@ const handleModal=()=>{
                           </tr>
                       </thead>
                       <tbody>
-                      {data.appartements?.map((appartement) => (
+
+                      {appartementsData.appartements?.map((appartement) => (
+
                           <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                               <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                               {appartement._id}
@@ -175,41 +189,37 @@ const handleModal=()=>{
                     </div>
                     <div>
                         <label for="floor" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Floor</label>
-                        <input type="number" name="floor" id="floor" placeholder=" floor number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/>
+                        <input type="text" name="floor" id="floor" placeholder=" floor number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/>
                     </div>
                     <div>
                         <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
-                        <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Price" required/>
+                        <input type="text" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Price" required/>
                     </div>
                     <div>
                         <label for="building" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Building</label>
                         <input type="text" name="building" id="building" placeholder=" Building name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/>
                     </div>
                     <div>
-                        <label for="owner" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Building</label>
-                        {/* <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option selected>Choose the Owner</option>
-                            <option value="US">United States</option>
-                        </select>  */}
-                        <input type="text" name="ownerId" id="ownerId"  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/>
+                        <label for="owner" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Owner</label>
+                        <select id="ownerId" name="ownerId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <option selected>Choose the Owner</option>
+                        {ownersData.owners?.map((owner) => (
+                            <option value={owner._id}>{owner.name}</option>
+                           
+                        ))}
+                        </select> 
+                        {/* <input type="text" name="ownerId" id="ownerId"  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required/> */}
                      </div>
-                </form>
-            </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
-                    
-                    type="button"
+                    type="submit"
                     className="inline-flex w-full justify-center rounded-md bg-green-300 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-400 sm:ml-3 sm:w-auto"
                     onClick={() => setOpen(false)}
                   >
                     Add
                   </button>
                   <button
-                    type="submit"
+                    type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                     onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
@@ -217,6 +227,13 @@ const handleModal=()=>{
                     Cancel
                   </button>
                 </div>
+                </form>
+            </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
               </Dialog.Panel>
             </Transition.Child>
           </div>

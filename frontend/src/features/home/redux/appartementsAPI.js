@@ -9,6 +9,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
       query: () => `appartements`,
 
     }),
+    getAppartementNumberByBuilding: builder.query({
+      query: (buildingName) =>({
+        url: `appartements/roomNumber/${buildingName}`,
+        method:"GET"
+      })
+  }),
+  
     createAppartement: builder.mutation({
       query: (newAppartement) => ({
         url: "appartements/create/",
@@ -21,4 +28,4 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 });
 
 export default appartementsApi
-export  const { useGetAllAppartementsQuery,useCreateAppartementMutation} = appartementsApi;
+export  const { useGetAllAppartementsQuery,useCreateAppartementMutation,useGetAppartementNumberByBuildingQuery} = appartementsApi;
