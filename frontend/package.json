@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.2",
     "flowbite-react": "^0.7.2",
+    "jspdf": "^2.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.0",

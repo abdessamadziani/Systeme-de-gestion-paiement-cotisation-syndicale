@@ -1,5 +1,7 @@
 const express = require('express');
 const Appartement = require('../models/Appartement');
+const Owner = require('../models/Owner');
+
 
 exports.create = async (req, res) => {
     try {
@@ -46,14 +48,56 @@ exports.getAppartementsNumber = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Failed to get Appartements room numbers' });
     }
+
 };
+
+exports.getAppartementById= async (req, res) => {
+    const id = req.params.id;  // Get the building name from query parameters
+    console.log(id)
+    try {
+        const appartement = await Appartement.findById({ _id: id }).populate('ownerId');
+        res.status(200).json({ message: 'Appartement  grabbed successfully', appartement });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get the Appartement' });
+    }
+
+};
+
+
+
+exports.getOwnerByAppartementNumber = async (req, res) => {
+    const appartementNb = req.params.nb; // Get the apartment number from query parameters
+  
+  
+
+    
+    try {
+        const appartements = await Appartement.find({ nb: appartementNb }).populate('ownerId');
+
+        if (appartements.length === 0) {
+            return res.status(404).json({ message: 'No appartements found with the given number' });
+        }
+
+        // Extracting owner information from each apartment
+        const owners = appartements.map(appartement => appartement.ownerId);
+
+        res.status(200).json({ message: 'Owners fetched successfully', owners });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get the Owners' });
+    }
+
+
+  };
 
 
 exports.updateAppartement = async (req, res) => {
     const appartementId = req.params.id; // Assuming you are passing the owner ID in the request parameters
     const updateData = req.body;
-console.log(updateData)
-console.log(req.body)
+    console.log("data",updateData)
+    console.log("params",appartementId);
+
     try {
 
         // Use findByIdAndUpdate with { new: true } to return the updated document
@@ -71,6 +115,9 @@ console.log(req.body)
         console.error(error);
         res.status(500).json({ error: 'Failed to update Appartement' });
     }
+
+    //  res.json({ message: 'hello' });
+
 };
 
 
@@ -89,6 +136,8 @@ exports.deleteAppartement = async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete Appartement' });
     }
+    // res.json({ message: 'hello' });
+
 };
 
 

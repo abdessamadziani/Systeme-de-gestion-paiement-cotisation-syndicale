@@ -1,5 +1,7 @@
 const express = require('express');
 const Payment = require('../models/Payment');
+const Appartement = require('../models/Appartement');
+
 
 exports.create = async (req, res) => {
     try {
@@ -29,47 +31,125 @@ exports.getPayments = async (req, res) => {
     }
 }; 
 
-exports.updatePayment = async (req, res) => {
-    const paymentId = req.params.id; // Assuming you are passing the owner ID in the request parameters
-    const updateData = req.body;
-console.log(updateData)
-console.log(req.body)
+exports.getPaymentById= async (req, res) => {
+    const id = req.params.id;  // Get the building name from query parameters
+    console.log(id)
     try {
+        const payment = await Payment.findById({ _id: id }).populate('appartementId');
+        res.status(200).json({ message: 'Payment  grabbed successfully', payment });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get the Payment' });
+    }
 
-        // Use findByIdAndUpdate with { new: true } to return the updated document
-        const updatedPayment = await Payment.findByIdAndUpdate(paymentId, updateData, { new: true });
-        console.log(updateData)
+    // res.json({ message: 'hello' });
 
-        if (updatedPayment) {
-            res.status(200).json({ message: 'Payment updated successfully', owner: updatedPayment });
-            console.log(updateData)
 
+};
+
+// exports.updatePayment = async (req, res) => {
+//     const paymentId = req.params.id; // Assuming you are passing the owner ID in the request parameters
+//     const updateData = req.body;
+// console.log(updateData)
+// console.log(req.body)
+//    try {
+
+//         const updatedPayment = await Payment.findByIdAndUpdate(paymentId, updateData, { new: true });
+//         console.log(updateData)
+
+//         if (updatedPayment) {
+//             res.status(200).json({ message: 'Payment updated successfully', payment: updatedPayment });
+//             console.log(updateData)
+
+//         } else {
+//             res.status(404).json({ message: 'Payment not found' });
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: 'Failed to update Payment' });
+//     }
+//     //  res.json({ message: 'Hii' });
+
+// };
+
+
+
+
+
+
+// exports.updatePayment = async (req, res) => {
+//     const paymentId = req.params.id;
+//     const updateData = req.body;
+  
+//     try {
+//       // Update the Appartement document first if appartementId is provided
+//       if (updateData?.appartementId) {
+//         const appartementId = updateData?.appartementId?._id; // Extract the ID
+//         await Appartement.findByIdAndUpdate(appartementId, {
+//           nb: updateData?.appartementId?.nb,
+//           building: updateData?.appartementId?.building,
+//         });
+//       }
+  
+//       // Then update the Payment document
+//       const updatedPayment = await Payment.findByIdAndUpdate(paymentId, updateData, { new: true });
+  
+//       if (updatedPayment) {
+//         res.status(200).json({ message: 'Payment updated successfully', payment: updatedPayment });
+//       } else {
+//         res.status(404).json({ message: 'Payment not found' });
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ error: 'Failed to update Payment' });
+//     }
+//   };
+  
+
+exports.updatePayment = async (req, res) => {
+    const paymentId = req.params.id;
+    const updateData = req.body;
+  
+    try {
+      // Check if appartementId is provided
+      if (updateData?.appartementId && updateData.appartementId._id) {
+        const { _id, nb, building } = updateData.appartementId;
+        await Appartement.findByIdAndUpdate(_id, { nb, building });
+      }
+  
+      // Update Payment document
+      const updatedPayment = await Payment.findByIdAndUpdate(paymentId, updateData, { new: true });
+  
+      if (updatedPayment) {
+        res.status(200).json({ message: 'Payment updated successfully', payment: updatedPayment });
+      } else {
+        res.status(404).json({ message: 'Payment not found' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to update Payment' });
+    }
+  };
+  
+
+
+
+
+exports.deletePayment = async (req, res) => {
+    const paymentId = req.params.id; // Assuming you are passing the owner ID in the request parameters
+    try {
+        const deletedPayment = await Payment.findByIdAndDelete(paymentId);
+        
+        if (deletedPayment) {
+            res.status(200).json({ message: 'Payment deleted successfully', payment: deletedPayment });
         } else {
             res.status(404).json({ message: 'Payment not found' });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to update Payment' });
+        res.status(500).json({ error: 'Failed to delete Payment' });
     }
 };
-
-
-
-// exports.deleteOwner = async (req, res) => {
-//     const ownerId = req.params.id; // Assuming you are passing the owner ID in the request parameters
-//     try {
-//         const deletedOwner = await Owner.findByIdAndDelete(ownerId);
-        
-//         if (deletedOwner) {
-//             res.status(200).json({ message: 'Owner deleted successfully', owner: deletedOwner });
-//         } else {
-//             res.status(404).json({ message: 'Owner not found' });
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Failed to delete Owner' });
-//     }
-// };
 
 
 

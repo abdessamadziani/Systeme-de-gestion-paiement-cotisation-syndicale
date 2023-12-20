@@ -12,6 +12,12 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
       query: () => `owners`,
 
     }),
+    getOwnerById: builder.query({
+      query: (ownerId) =>({
+        url: `owners/${ownerId}`,
+        method:"GET"
+      })
+    }),
     
     createOwner: builder.mutation({
       query: (newClient) => ({
@@ -20,10 +26,23 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
         body: newClient,
       }),
     }),
+    updateOwner: builder.mutation({
+      query: (body) =>({
+        url: `owners/edit/${body.ownerId}`,
+        method:"PUT",
+        body: body,
+      })
+    }),
+    deleteOwner: builder.mutation({
+      query: (ownerId) =>({
+        url: `owners/delete/${ownerId}`,
+        method:"DELETE"
+      })
+    }),
 
 
   }),
 });
 
 export default ownersApi
-export  const { useGetAllOwnersQuery, useCreateOwnerMutation} = ownersApi;
+export  const { useGetAllOwnersQuery, useCreateOwnerMutation,useGetOwnerByIdQuery,useUpdateOwnerMutation,useDeleteOwnerMutation} = ownersApi;

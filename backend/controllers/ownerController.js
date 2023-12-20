@@ -27,6 +27,20 @@ exports.getOwners = async (req, res) => {
     }
 }; 
 
+
+exports.getOwnerById= async (req, res) => {
+    const id = req.params.id;  // Get the building name from query parameters
+    console.log(id)
+    try {
+        const owner = await Owner.findById({ _id: id });
+        res.status(200).json({ message: 'Owner  grabbed successfully', owner });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get the Owner' });
+    }
+
+};
+
 exports.updateOwner = async (req, res) => {
     const ownerId = req.params.id; // Assuming you are passing the owner ID in the request parameters
     const updateData = req.body;

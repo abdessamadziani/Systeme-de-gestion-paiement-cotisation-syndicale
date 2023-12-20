@@ -15,7 +15,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
         method:"GET"
       })
   }),
-  
+  getOwnerByAppartementNumber: builder.query({
+    query: (roomNumber) =>({
+      url: `appartements/owner/${roomNumber}`,
+      method:"GET"
+    })
+}),
+getAppartementById: builder.query({
+  query: (appartementId) =>({
+    url: `appartements/${appartementId}`,
+    method:"GET"
+  })
+}),
+
     createAppartement: builder.mutation({
       query: (newAppartement) => ({
         url: "appartements/create/",
@@ -23,9 +35,22 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
         body: newAppartement,
       }),
     }),
+    updateAppartement: builder.mutation({
+      query: (body) =>({
+        url: `appartements/edit/${body.appartementId}`,
+        method:"PUT",
+        body: body,
+      })
+    }),
+    deleteAppartement: builder.mutation({
+      query: (appartementId) =>({
+        url: `appartements/delete/${appartementId}`,
+        method:"DELETE"
+      })
+    }),
 
   }),
 });
 
 export default appartementsApi
-export  const { useGetAllAppartementsQuery,useCreateAppartementMutation,useGetAppartementNumberByBuildingQuery} = appartementsApi;
+export  const { useGetAllAppartementsQuery,useCreateAppartementMutation,useGetAppartementNumberByBuildingQuery,useGetOwnerByAppartementNumberQuery,useGetAppartementByIdQuery,useUpdateAppartementMutation,useDeleteAppartementMutation} = appartementsApi;
