@@ -51,5 +51,5 @@ describe('deletePayment function', () => {
     expect(Payment.findByIdAndDelete).toHaveBeenCalledWith(req.params.id);
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ error: errorMessage });
-  });
+  }); 
 });
