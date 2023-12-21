@@ -11,17 +11,17 @@ import { Dialog, Transition } from '@headlessui/react'
  const Payment = () => {
   const [isPaymentAdded, setIsPaymentAdded] = useState(false);
   const [isPaymentDeleted,setIsPaymentDeleted] = useState(false);
+  const [isPaymentUpdated,setIsPaymentUpdated] = useState(false);
   const [open, setOpen] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [buildingName,setBuildingName]=useState('noting')
   const [roomNumber,setRoomNumber]=useState(1)
   const [paymentId,setPaymentId]=useState("")
-  const [date,setDate]=useState(new Date())
   useEffect(() => {
-    if (isPaymentAdded || isPaymentDeleted) {
+    if (isPaymentAdded || isPaymentUpdated || isPaymentDeleted) {
       window.location.reload();
     }
-  }, [isPaymentAdded,isPaymentDeleted]);
+  }, [isPaymentAdded,isPaymentUpdated,isPaymentDeleted]);
 
 
     const handleModal=()=>{
@@ -100,31 +100,6 @@ const handleSubmit = async(event) => {
 };
 
 
-
-
-    // const handleSubmitEdit = async(event) => {
-    //   event.preventDefault();
-      
-    //   const updatedPayment = {
-    //     nb: event.target.number.value,
-    //     building: event.target.building.value,
-    //     appartementId:event.target.appartementId.value,
-    //     ownerId: event.target.ownerId.value,
-    //     status: event.target.status.value,
-    //     paymentId: paymentId
-
-    //   };
-
-    //    await updatePaymentById(updatedPayment)
-    //    console.log(updatedPayment)
-    //   //  setIsOwnerUpdated(true);
-
-    //    setOpenEdit(false);
-    // };
-
-
-
-
     const handleSubmitEdit = async (event) => {
       event.preventDefault();
       
@@ -141,6 +116,7 @@ const handleSubmit = async(event) => {
       };
     
       await updatePaymentById(updatedPayment);
+      setIsPaymentUpdated(true);
       console.log(updatedPayment);
       setOpenEdit(false);
     };
@@ -225,131 +201,6 @@ const handleSubmit = async(event) => {
 
 //   pdf.save('All_Paid_Tenants_Receipt.pdf');
 // };
-
-
-
-
-
-// const handlePrintAllPaidTenants = (paidPayments) => {
-//   const pdf = new jsPDF();
-//   const logoHeight = 40;
-//   const logoMargin = 10; 
-
-//   setupPDFStyles(pdf);
-//   addHeader(pdf, 'All Paid Tenants Receipt', 20, 20);
-
-//   const startY = calculateStartY(logoHeight, logoMargin); 
-//   const columnWidths = [40, 40, 40, 40, 40]; // Adjusted for equal spacing
-//   const headers = ['Room Number', 'Building', 'Owner Name', 'Status', 'Date'];
-
-//   drawTableHeader(pdf, startY, headers, columnWidths);
-
-//   paidPayments.payments.forEach((payment, index) => {
-//     const rowData = [
-//       payment?.appartementId?.nb,
-//       payment?.appartementId?.building,
-//       payment?.ownerId?.name,
-//       payment?.status,
-//        payment.date,
-//     ];
-
-//     drawDataRow(pdf, startY, index, rowData, columnWidths);
-//   });
-
-//   drawTableBorders(pdf, startY, paidPayments.payments.length, columnWidths);
-//   checkAndAddNewPageIfNeeded(pdf, startY, paidPayments.payments.length);
-//   pdf.save('All_Paid_Tenants_Receipt.pdf');
-// };
-
-// function setupPDFStyles(pdf) {
-//   pdf.setFontSize(12); 
-//   pdf.setFont('helvetica', 'bold');
-// }
-
-// function addHeader(pdf, title, x, y) {
-//   pdf.text(title, x, y);
-// }
-
-// function calculateStartY(logoHeight, logoMargin) {
-//   return 30 + logoHeight + logoMargin;
-// }
-
-// function drawTableHeader(pdf, startY, headers, columnWidths) {
-//   pdf.setFillColor(200, 220, 255);
-//   const headerHeight = 20;
-//   pdf.rect(20, startY, pdf.internal.pageSize.width - 40, headerHeight, 'F');
-//   pdf.setTextColor(0, 0, 0);
-//   pdf.setFont('helvetica', 'bold');
-
-//   headers.forEach((header, index) => {
-//     const textWidth = pdf.getStringUnitWidth(header) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
-//     const cellWidth = columnWidths[index];
-//     const xPosition = 20 + getColumnOffset(columnWidths, index) + (cellWidth - textWidth) / 2;
-
-//     pdf.text(header, xPosition, startY + headerHeight / 2 + 3); // Centered vertically and horizontally
-//   });
-
-//   // Add border to the header
-//   pdf.setDrawColor(0, 0, 0);
-//   pdf.rect(20, startY, pdf.internal.pageSize.width - 40, headerHeight);
-// }
-
-// function getColumnOffset(columnWidths, index, centered = false) {
-//   const totalWidth = columnWidths.slice(0, index + 1).reduce((a, b) => a + b, 0);
-//   return centered ? totalWidth - columnWidths[index] / 2 : totalWidth - columnWidths[index];
-// }
-
-// function drawDataRow(pdf, startY, rowIndex, rowData, columnWidths) {
-//   const rowHeight = 20;
-//   const yPosition = startY + (rowIndex + 1) * rowHeight;
-
-//   // Alternate row colors between black and grey
-//   pdf.setFillColor(rowIndex % 2 === 0 ? 0 : 128, 128, 128);
-//   pdf.rect(20, yPosition, pdf.internal.pageSize.width - 40, rowHeight, 'F');
-
-//   // White text for visibility on dark backgrounds
-//   pdf.setFont('helvetica', 'normal');
-//   pdf.setTextColor(255, 255, 255);
-
-//   rowData.forEach((data, columnIndex) => {
-//     const text = String(data);
-//     const textWidth = pdf.getStringUnitWidth(text) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
-//     const cellWidth = columnWidths[columnIndex];
-//     const xPosition = 20 + getColumnOffset(columnWidths, columnIndex) + (cellWidth - textWidth) / 2;
-
-//     pdf.text(text, xPosition, yPosition + rowHeight / 2 + 3); // Centered vertically and horizontally
-//   });
-// }
-
-// function drawTableBorders(pdf, startY, rowCount, columnWidths) {
-//   const rowHeight = 20;
-
-//   // Draw horizontal lines
-//   for (let i = 0; i <= rowCount; i++) {
-//     const yPosition = startY + i * rowHeight;
-//     pdf.setDrawColor(0, 0, 0);
-//     pdf.line(20, yPosition, pdf.internal.pageSize.width - 20, yPosition);
-//   }
-
-//   // Draw vertical lines
-//   let xPosition = 20;
-//   for (let i = 0; i <= columnWidths.length; i++) {
-//     pdf.line(xPosition, startY, xPosition, startY + rowCount * rowHeight);
-//     xPosition += i < columnWidths.length ? columnWidths[i] : 0;
-//   }
-// }
-
-// function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
-//   const rowHeight = 20;
-//   const endY = pdf.internal.pageSize.height - 20;
-//   const totalContentHeight = startY + (rowCount + 1) * rowHeight;
-
-//   if (totalContentHeight > endY) {
-//     pdf.addPage();
-//   }
-// }
-
-
 
 
 
