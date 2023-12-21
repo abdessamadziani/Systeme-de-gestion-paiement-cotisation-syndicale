@@ -11,6 +11,7 @@ import HomeRoutes from "./features/home/routes/HomeRoutes";
 
 // import MenuRoutes from "./features/menu/routes/menuRoutes";
 import {LandingPage} from "./shared/pages/LandingPage"
+import { SignIn } from './features/auth/components';
 // import AdminRoutes from "./features/adminDashboard/routes/AdminRoutes";
 
 
@@ -23,8 +24,9 @@ function App() {
     <>
       <Routes>
       <Route path="/" element={<RootLayout />}>
-        <Route index element={<LandingPage/>} />
-        <Route path="/auth/*" element={<AuthRoutes />} />
+        {/* <Route index  element={<LandingPage/>} /> */}
+        <Route index  element={<SignIn/>} />
+        <Route  path="/auth/*" element={<AuthRoutes />} />
         <Route path="/home/*" element={<HomeRoutes />} />
 
         {/* <Route path="/mail/*" element={<MailRoutes />} /> */}

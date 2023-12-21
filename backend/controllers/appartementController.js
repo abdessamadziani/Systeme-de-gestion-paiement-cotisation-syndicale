@@ -9,9 +9,7 @@ exports.create = async (req, res) => {
         const savedAppartement = await appartement.save();
 
         res.status(200).json({ message: 'Appartement added successfully', appartement: savedAppartement });
-        console.log(req.body)
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Failed to add Appartement' });
     }
 };
@@ -95,28 +93,21 @@ exports.getOwnerByAppartementNumber = async (req, res) => {
 exports.updateAppartement = async (req, res) => {
     const appartementId = req.params.id; // Assuming you are passing the owner ID in the request parameters
     const updateData = req.body;
-    console.log("data",updateData)
-    console.log("params",appartementId);
+
 
     try {
 
-        // Use findByIdAndUpdate with { new: true } to return the updated document
         const updatedAppartement = await Appartement.findByIdAndUpdate(appartementId, updateData, { new: true });
-        console.log(updateData)
 
         if (updatedAppartement) {
             res.status(200).json({ message: 'Appartement updated successfully', appartement: updatedAppartement });
-            console.log(updateData)
 
         } else {
             res.status(404).json({ message: 'Appartement not found' });
         }
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Failed to update Appartement' });
     }
-
-    //  res.json({ message: 'hello' });
 
 };
 
@@ -133,10 +124,8 @@ exports.deleteAppartement = async (req, res) => {
             res.status(404).json({ message: 'Appartement not found' });
         }
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Failed to delete Appartement' });
     }
-    // res.json({ message: 'hello' });
 
 };
 

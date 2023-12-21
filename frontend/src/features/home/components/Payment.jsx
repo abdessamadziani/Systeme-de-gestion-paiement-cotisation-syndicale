@@ -1,6 +1,7 @@
 import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
  import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+ import { formatDistanceToNow, subHours } from "date-fns";
  import SideBar from './SideBar'
  import jsPDF from 'jspdf'
  import { useGetAllPaymentsQuery,useCreatePaymentMutation,useGetPaymentByIdQuery,useUpdatePaymentMutation,useDeletePaymentMutation } from '../redux/paymentsAPI';
@@ -15,6 +16,7 @@ import { Dialog, Transition } from '@headlessui/react'
   const [buildingName,setBuildingName]=useState('noting')
   const [roomNumber,setRoomNumber]=useState(1)
   const [paymentId,setPaymentId]=useState("")
+  const [date,setDate]=useState(new Date())
   useEffect(() => {
     if (isPaymentAdded || isPaymentDeleted) {
       window.location.reload();
@@ -87,6 +89,7 @@ const handleSubmit = async(event) => {
     ownerId: event.target.ownerId.value,
     appartementId: event.target.appartementId.value,
     status: event.target.status.value,
+    date:event.target.date.value,
    
   };
 
@@ -133,6 +136,7 @@ const handleSubmit = async(event) => {
         },
         ownerId: event.target.ownerId.value,
         status: event.target.status.checked, // Assuming status is a checkbox
+        date:event.target.date.value,
         paymentId: paymentId // Assuming this is defined elsewhere
       };
     
@@ -226,26 +230,150 @@ const handleSubmit = async(event) => {
 
 
 
+// const handlePrintAllPaidTenants = (paidPayments) => {
+//   const pdf = new jsPDF();
+//   const logoHeight = 40;
+//   const logoMargin = 10; 
+
+//   setupPDFStyles(pdf);
+//   addHeader(pdf, 'All Paid Tenants Receipt', 20, 20);
+
+//   const startY = calculateStartY(logoHeight, logoMargin); 
+//   const columnWidths = [40, 40, 40, 40, 40]; // Adjusted for equal spacing
+//   const headers = ['Room Number', 'Building', 'Owner Name', 'Status', 'Date'];
+
+//   drawTableHeader(pdf, startY, headers, columnWidths);
+
+//   paidPayments.payments.forEach((payment, index) => {
+//     const rowData = [
+//       payment?.appartementId?.nb,
+//       payment?.appartementId?.building,
+//       payment?.ownerId?.name,
+//       payment?.status,
+//        payment.date,
+//     ];
+
+//     drawDataRow(pdf, startY, index, rowData, columnWidths);
+//   });
+
+//   drawTableBorders(pdf, startY, paidPayments.payments.length, columnWidths);
+//   checkAndAddNewPageIfNeeded(pdf, startY, paidPayments.payments.length);
+//   pdf.save('All_Paid_Tenants_Receipt.pdf');
+// };
+
+// function setupPDFStyles(pdf) {
+//   pdf.setFontSize(12); 
+//   pdf.setFont('helvetica', 'bold');
+// }
+
+// function addHeader(pdf, title, x, y) {
+//   pdf.text(title, x, y);
+// }
+
+// function calculateStartY(logoHeight, logoMargin) {
+//   return 30 + logoHeight + logoMargin;
+// }
+
+// function drawTableHeader(pdf, startY, headers, columnWidths) {
+//   pdf.setFillColor(200, 220, 255);
+//   const headerHeight = 20;
+//   pdf.rect(20, startY, pdf.internal.pageSize.width - 40, headerHeight, 'F');
+//   pdf.setTextColor(0, 0, 0);
+//   pdf.setFont('helvetica', 'bold');
+
+//   headers.forEach((header, index) => {
+//     const textWidth = pdf.getStringUnitWidth(header) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+//     const cellWidth = columnWidths[index];
+//     const xPosition = 20 + getColumnOffset(columnWidths, index) + (cellWidth - textWidth) / 2;
+
+//     pdf.text(header, xPosition, startY + headerHeight / 2 + 3); // Centered vertically and horizontally
+//   });
+
+//   // Add border to the header
+//   pdf.setDrawColor(0, 0, 0);
+//   pdf.rect(20, startY, pdf.internal.pageSize.width - 40, headerHeight);
+// }
+
+// function getColumnOffset(columnWidths, index, centered = false) {
+//   const totalWidth = columnWidths.slice(0, index + 1).reduce((a, b) => a + b, 0);
+//   return centered ? totalWidth - columnWidths[index] / 2 : totalWidth - columnWidths[index];
+// }
+
+// function drawDataRow(pdf, startY, rowIndex, rowData, columnWidths) {
+//   const rowHeight = 20;
+//   const yPosition = startY + (rowIndex + 1) * rowHeight;
+
+//   // Alternate row colors between black and grey
+//   pdf.setFillColor(rowIndex % 2 === 0 ? 0 : 128, 128, 128);
+//   pdf.rect(20, yPosition, pdf.internal.pageSize.width - 40, rowHeight, 'F');
+
+//   // White text for visibility on dark backgrounds
+//   pdf.setFont('helvetica', 'normal');
+//   pdf.setTextColor(255, 255, 255);
+
+//   rowData.forEach((data, columnIndex) => {
+//     const text = String(data);
+//     const textWidth = pdf.getStringUnitWidth(text) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+//     const cellWidth = columnWidths[columnIndex];
+//     const xPosition = 20 + getColumnOffset(columnWidths, columnIndex) + (cellWidth - textWidth) / 2;
+
+//     pdf.text(text, xPosition, yPosition + rowHeight / 2 + 3); // Centered vertically and horizontally
+//   });
+// }
+
+// function drawTableBorders(pdf, startY, rowCount, columnWidths) {
+//   const rowHeight = 20;
+
+//   // Draw horizontal lines
+//   for (let i = 0; i <= rowCount; i++) {
+//     const yPosition = startY + i * rowHeight;
+//     pdf.setDrawColor(0, 0, 0);
+//     pdf.line(20, yPosition, pdf.internal.pageSize.width - 20, yPosition);
+//   }
+
+//   // Draw vertical lines
+//   let xPosition = 20;
+//   for (let i = 0; i <= columnWidths.length; i++) {
+//     pdf.line(xPosition, startY, xPosition, startY + rowCount * rowHeight);
+//     xPosition += i < columnWidths.length ? columnWidths[i] : 0;
+//   }
+// }
+
+// function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
+//   const rowHeight = 20;
+//   const endY = pdf.internal.pageSize.height - 20;
+//   const totalContentHeight = startY + (rowCount + 1) * rowHeight;
+
+//   if (totalContentHeight > endY) {
+//     pdf.addPage();
+//   }
+// }
+
+
+
+
+
+
 const handlePrintAllPaidTenants = (paidPayments) => {
   const pdf = new jsPDF();
   const logoHeight = 40;
-  const logoMargin = 10; 
+  const logoMargin = 10;
 
   setupPDFStyles(pdf);
   addHeader(pdf, 'All Paid Tenants Receipt', 20, 20);
 
-  const startY = calculateStartY(logoHeight, logoMargin); 
-  const columnWidths = [40, 40, 40, 40]; // Adjusted for equal spacing
-  const headers = ['Room Number', 'Building', 'Owner Name', 'Status'];
+  const startY = calculateStartY(logoHeight, logoMargin);
+  const columnWidths = [40, 40, 40, 40, 40]; // Adjusted for equal spacing, including the new "Date" column
+  const headers = ['Room Number', 'Building', 'Owner Name', 'Status']; // Add "Date" header
 
   drawTableHeader(pdf, startY, headers, columnWidths);
 
   paidPayments.payments.forEach((payment, index) => {
     const rowData = [
-      payment.appartementId.nb,
-      payment.appartementId.building,
-      payment.ownerId.name,
-      payment.status,
+      payment?.appartementId?.nb,
+      payment?.appartementId?.building,
+      payment?.ownerId?.name,
+      payment?.status,
     ];
 
     drawDataRow(pdf, startY, index, rowData, columnWidths);
@@ -257,7 +385,7 @@ const handlePrintAllPaidTenants = (paidPayments) => {
 };
 
 function setupPDFStyles(pdf) {
-  pdf.setFontSize(12); 
+  pdf.setFontSize(12);
   pdf.setFont('helvetica', 'bold');
 }
 
@@ -359,12 +487,13 @@ function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
 
 
 
+
   return (
     <>
       <SideBar/>
       <div className='mt-24 flex w-full justify-end'>
          <button onClick={handleModal}   type="button" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Add New Payment</button>
-         <button onClick={()=>handlePrintAllPaidTenants(dataPayments)}  type="button" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 " >Print</button>
+         <button onClick={()=>handlePrintAllPaidTenants(dataPayments)}  type="button" className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 mr-12 mt-2" >Print</button>
       </div>
 
       
@@ -393,6 +522,9 @@ function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
                                   Status
                               </th>
                               <th scope="col" className="px-6 py-3">
+                                  Date
+                              </th>
+                              <th scope="col" className="px-6 py-3">
                                   Update
                               </th>
                               <th scope="col" className="px-6 py-3">
@@ -401,10 +533,10 @@ function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
                           </tr>
                       </thead>
                       <tbody>
-                      {dataPayments?.payments?.map((payment) => (
+                      {dataPayments?.payments?.map((payment,index) => (
                           <tr key={payment._id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                               <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                  {payment._id}
+                                  {index+1}
                               </th>
                               <td className="px-6 py-4">
                               {payment?.appartementId?.nb}
@@ -419,12 +551,17 @@ function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
                               <td className="px-6 py-4">
                               {payment.status ? 'paid' : 'Not paid'}
                               </td>
+                              <td className="px-6 py-4">
+                                {formatDistanceToNow(new Date(new Date(payment.date).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })))   }
+                                {/* const adjustedDate = subHours(new Date(paymentDateStr), 11); */}
+
+                              </td>
                                
                               <td className="px-6 py-4">
-                                  <button onClick={()=>handleModalEdit(payment._id)}  type="submit" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Edit</button>
+                                  <button onClick={()=>handleModalEdit(payment._id)}  type="submit" className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Edit</button>
                               </td>
                               <td className="px-6 py-4">
-                              <button onClick={()=>handleSubmitDelete(payment._id)}  type="submit" className=" text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5   text-center mx-4 ">Delete</button>
+                              <button onClick={()=>handleSubmitDelete(payment._id)}  type="submit" className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Delete</button>
                               </td>
                           </tr>
                       ))}
@@ -524,6 +661,11 @@ function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
                             <option value="true" >Paid</option>
                        </select> 
                     </div>
+                    <div>
+                        <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Owner Name</label>
+                        <input type="date" id="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required/>
+   
+                     </div>
                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="submit"
@@ -640,6 +782,11 @@ function checkAndAddNewPageIfNeeded(pdf, startY, rowCount) {
                             <option value="true" >Paid</option>
                        </select> 
                     </div>
+                    <div>
+                        <label for="date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Owner Name</label>
+                        <input type="date" id="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required/>
+   
+                     </div>
 
                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button

@@ -12,6 +12,7 @@ import 'sweetalert2/dist/sweetalert2.min.js'; // Import the JavaScript file
 
 
 function SignIn() {
+  const navigate=useNavigate()
 
   const {
     register,
@@ -34,45 +35,6 @@ const [user,setUser]=useState({
 
 }
 
-// const submitSignIn = () => {
-//     //  e.preventDefault()
-
-
-//         axios.post('http://localhost:8000/api/admins/signin', user, {
-//           headers: {
-//             'Accept': 'application/json',
-//             'Content-Type': 'application/json',
-//           },
-//         })
-//         console.log("clicked")
-//           .then(res => {
-//             // Handle the successful response here.
-//             console.log(res.data);
-//             clearInputs()
-//             Swal.fire({
-//               title: 'Your registration is done successfully',
-//               text: 'Go Check Your Email To Activate Your Account',
-//               icon: 'success',
-//               confirmButtonText: 'Cool'
-//             })
-            
-//           })
-//           .catch(error => {
-//             // Handle any errors that occur during the request.
-//             console.error(error);
-//             Swal.fire({
-//               title: 'Failed registration',
-//               text: 'Try Again ',
-//               icon: 'error',
-//               confirmButtonText: 'Okey'
-//             })
-        
-//           });
-      
-
-//    };
-
-
 
 const submitSignIn = () => {
   axios.post('http://localhost:8000/api/admins/signin', user, {
@@ -86,11 +48,16 @@ const submitSignIn = () => {
       console.log(res.data);
       clearInputs();
       Swal.fire({
-        title: 'Your registration is done successfully',
-        text: 'Go Check Your Email To Activate Your Account',
+        title: 'Sign is done successfully',
+        text: 'Welcome',
         icon: 'success',
         confirmButtonText: 'Cool'
       });
+
+              console.log(' this is the res before create local storage',res);
+              localStorage.setItem('jwt_token',JSON.stringify(res.data));
+              console.log(' this is the res.data after creat local storage',res.data);
+      navigate('/home/appartements')
     })
     .catch(error => {
       // Handle any errors that occur during the request.
@@ -140,12 +107,13 @@ const submitSignIn = () => {
                           </div>
                           <label htmlFor="remember" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Remember me</label>
                       </div> */}
-                      <Link to='/forgetpassword' className="ml-auto text-sm text-blue-700 hover:underline dark:text-blue-500">Lost Password?</Link>
+                      <Link to='http://localhost:5173/auth/forgetpassword' className="ml-auto text-sm text-blue-700 hover:underline dark:text-blue-500">Lost Password?</Link>
                   </div>
                   <button type="submit" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Sign In</button>
                   <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
-                      Not registered? <a href="#" className="text-blue-700 hover:underline dark:text-blue-500">Create account</a>
+                      Not registered? <Link to='http://localhost:5173/auth/signup' className="text-blue-700 hover:underline dark:text-blue-500">Create account</Link>
                   </div>
+
 
                   {/* {JSON.stringify(user)} */}
               </form>

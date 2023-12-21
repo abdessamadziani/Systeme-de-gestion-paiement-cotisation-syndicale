@@ -6,6 +6,7 @@ const Appartement = require('../models/Appartement');
 exports.create = async (req, res) => {
     try {
         const payment = new Payment(req.body);
+        console.log(req.body)
         const savedPayment = await payment.save();
 
         res.status(200).json({ message: 'Payment added successfully', payment: savedPayment });

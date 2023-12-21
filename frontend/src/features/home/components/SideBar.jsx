@@ -1,7 +1,38 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
-
+import {Link,useNavigate} from 'react-router-dom'
+import Swal from 'sweetalert2'; // Import the main SweetAlert2 module
+import 'sweetalert2/dist/sweetalert2.min.css'; // Import the CSS file
+import 'sweetalert2/dist/sweetalert2.min.js'; // Import the JavaScript file
  const SideBar = () => {
+
+const navigate=useNavigate()
+
+
+
+
+   const signout=()=>{
+      fetch('http://localhost:8000/api/admins/signout')
+      .then(()=>{
+        localStorage.removeItem('jwt_token')
+        Swal.fire({
+          title: 'User Signout see you NextTime',
+          showclassName: {
+            popup: 'animate__animated animate__fadeInDown'
+          },
+          hideclassName: {
+            popup: 'animate__animated animate__fadeOutUp'
+          }
+        })
+        navigate('/auth/signin');
+  
+      })
+      .catch()
+    }
+
+
+
+
+
   return (
     <>
        
@@ -72,7 +103,7 @@ import {Link} from 'react-router-dom'
             </a>
          </li>
          <li>
-            <Link to="http://localhost:5173/home/appatements" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <Link to="http://localhost:5173/home/appartements" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
                   <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
                </svg>
@@ -96,7 +127,7 @@ import {Link} from 'react-router-dom'
                <span className="flex-1 ms-3 whitespace-nowrap">Payments</span>
             </Link>
          </li>
-         <li>
+         {/* <li>
             <Link to="http://localhost:5173/home/history" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z"/>
@@ -105,15 +136,15 @@ import {Link} from 'react-router-dom'
                </svg>
                <span className="flex-1 ms-3 whitespace-nowrap">History</span>
             </Link>
-         </li>
-         <li>
-            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+         </li>*/}
+         <li> 
+         <span onClick={signout} className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
               
                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 16">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/>
                </svg>
                <span className="flex-1 ms-3 whitespace-nowrap">Sign Up</span>
-            </a>
+            </span>
          </li>
       </ul>
    </div>

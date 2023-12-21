@@ -7,9 +7,7 @@ exports.create = async (req, res) => {
         const savedOwner = await owner.save();
 
         res.status(200).json({ message: 'Owner added successfully', owner: savedOwner });
-        console.log(req.body)
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Failed to add Owner' });
     }
 };
